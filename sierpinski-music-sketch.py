@@ -9,13 +9,14 @@ RND_RANDOM_BEATS = 0       # Chooses random sounds from any of the following 3 s
 RND_ELECTRO_BEATS = 1      # 128 BPM
 RND_HOUSE_BEATS = 2        # 120 BPM
 RND_TECHNO_BEATS = 3       # 125 BPM
+RND_EIGHTBIT_BEATS = 4     # 115 BPM
 
 # -------------------------
 # Configuration Constants
 # -------------------------
-TEMPO_BPM = 128                           # Tempo to set in Beats per Minute (BPM)
+TEMPO_BPM = 120                           # Tempo to set in Beats per Minute (BPM)
 USE_RANDOM_PATTERN = False                # Change to True for a truly random pattern
-RANDOM_SOUND_CHOICE = RND_ELECTRO_BEATS   # Change to one of the RND_* choices
+RANDOM_SOUND_CHOICE = RND_RANDOM_BEATS    # Change to one of the RND_* choices
 
 def in_carpet(x, y):
     # Used to indicate if a beat should be included
@@ -64,221 +65,91 @@ def makeSierpinskiCarpet(audioclips, n, depth, start, skip=False):
         makeBeat(audioclips, i+1, start, beatString)
         d = d - 1
 
-def getRandomElectroBeats():
-    # Creates a random list of sounds
-    drumList = [ELECTRO_DRUM_MAIN_BEAT_001,
-                ELECTRO_DRUM_MAIN_BEAT_002,
-                ELECTRO_DRUM_MAIN_BEAT_003,
-                ELECTRO_DRUM_MAIN_BEAT_004,
-                ELECTRO_DRUM_MAIN_BEAT_005,
-                ELECTRO_DRUM_MAIN_BEAT_006,
-                ELECTRO_DRUM_MAIN_BEAT_007,
-                ELECTRO_DRUM_MAIN_BEAT_008,
-                ELECTRO_DRUM_MAIN_BEAT_009,
-                ELECTRO_DRUM_MAIN_BEAT_010]
-    bassList = [ELECTRO_ANALOGUE_BASS_001,
-                ELECTRO_ANALOGUE_BASS_002,
-                ELECTRO_ANALOGUE_BASS_003,
-                ELECTRO_ANALOGUE_BASS_004,
-                ELECTRO_ANALOGUE_BASS_005,
-                ELECTRO_ANALOGUE_BASS_006,
-                ELECTRO_ANALOGUE_BASS_007,
-                ELECTRO_ANALOGUE_BASS_008,
-                ELECTRO_ANALOGUE_BASS_009,
-                ELECTRO_ANALOGUE_BASS_010]
-    phaserList = [ELECTRO_ANALOGUE_PHASERBASS_001,
-                  ELECTRO_ANALOGUE_PHASERBASS_002,
-                  ELECTRO_ANALOGUE_PHASERBASS_003,
-                  ELECTRO_ANALOGUE_PHASERBASS_004]
-    spaceList  = [ELECTRO_ANALOGUE_SPACELEAD_001,
-                  ELECTRO_ANALOGUE_SPACELEAD_002,
-                  ELECTRO_ANALOGUE_SPACELEAD_003,
-                  ELECTRO_ANALOGUE_SPACELEAD_004,
-                  ELECTRO_ANALOGUE_SPACELEAD_005]
-    leadList   = [ELECTRO_ANALOGUE_LEAD_001,
-                  ELECTRO_ANALOGUE_LEAD_002,
-                  ELECTRO_ANALOGUE_LEAD_003,
-                  ELECTRO_ANALOGUE_LEAD_004,
-                  ELECTRO_ANALOGUE_LEAD_005,
-                  ELECTRO_ANALOGUE_LEAD_006,
-                  ELECTRO_ANALOGUE_LEAD_007,
-                  ELECTRO_ANALOGUE_LEAD_008,
-                  ELECTRO_ANALOGUE_LEAD_009,
-                  ELECTRO_ANALOGUE_LEAD_010]
-    motorList  = [ELECTRO_MOTORBASS_001,
-                  ELECTRO_MOTORBASS_002,
-                  ELECTRO_MOTORBASS_003,
-                  ELECTRO_MOTORBASS_004,
-                  ELECTRO_MOTORBASS_005]
-    sfxList    = [ELECTRO_SFX_WHITENOISE_SCATTER_001,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_002,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_003,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_004,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_005,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_006,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_007,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_008,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_009,
-                  ELECTRO_SFX_WHITENOISE_SCATTER_010]
+def createSoundList(prefix, start, end):
+    # creates a simple list of sound files by building
+    # up constants as string and then evaluating them
+    soundList = []
+    for i in range(start, end+1):
+        f = prefix + '%(number)03d' % {"number": i}
+        soundList.append(globals()[f])
+    return soundList
 
-    drums = randint(0, len(drumList )-1)
-    bass  = randint(0, len(bassList)-1)
-    phase = randint(0, len(phaserList)-1)
-    space = randint(0, len(spaceList)-1)
-    lead  = randint(0, len(leadList)-1)
-    motor = randint(0, len(motorList)-1)
-    sfx   = randint(0, len(sfxList)-1)
+soundLists = []
+def setupSoundLists():
 
-    return [drumList[drums],
-            bassList[bass],
-            phaserList[phase],
-            spaceList[space],
-            leadList[lead],
-            motorList[motor],
-            sfxList[sfx]]
+    # Electro
+    electro = [createSoundList('ELECTRO_DRUM_MAIN_BEAT_', 1, 10),
+               createSoundList('ELECTRO_ANALOGUE_BASS_', 1, 10),
+               createSoundList('ELECTRO_ANALOGUE_PHASERBASS_', 1, 4),
+               createSoundList('ELECTRO_ANALOGUE_SPACELEAD_', 1, 5),
+               createSoundList('ELECTRO_ANALOGUE_LEAD_', 1, 10),
+               createSoundList('ELECTRO_MOTORBASS_', 1, 5),
+               createSoundList('ELECTRO_SFX_WHITENOISE_SCATTER_', 1, 10)]
 
-def getRandomHouseBeats():
-    # Creates a random list of sounds
-    drumList  = [HOUSE_BREAKBEAT_001,
-                 HOUSE_BREAKBEAT_002,
-                 HOUSE_BREAKBEAT_003,
-                 HOUSE_BREAKBEAT_004]
-    fillList  = [HOUSE_BREAK_FILL_001,
-                 HOUSE_BREAK_FILL_002,
-                 HOUSE_BREAK_FILL_003,
-                 HOUSE_BREAK_FILL_004]
-    pianoList = [HOUSE_ROADS_PIANO_001,
-                 HOUSE_ROADS_PIANO_002,
-                 HOUSE_ROADS_PIANO_003,
-                 HOUSE_ROADS_PIANO_007]
-    chordList = [HOUSE_DEEP_AIRYCHORD_001,
-                 HOUSE_DEEP_AIRYCHORD_002,
-                 HOUSE_DEEP_CHORD_001,
-                 HOUSE_DEEP_CHORD_002]
-    leadList  = [HOUSE_DEEP_MOOGLEAD_001,
-                 HOUSE_DEEP_MOOGLEAD_002,
-                 HOUSE_DEEP_MOOGLEAD_003,
-                 HOUSE_DEEP_MOOGLEAD_004,
-                 HOUSE_DEEP_MOOGLEAD_005,
-                 HOUSE_DEEP_MOOGLEAD_006,
-                 HOUSE_DEEP_MOOGLEAD_007,
-                 HOUSE_DEEP_MOOGLEAD_009,
-                 HOUSE_DEEP_MOOGLEAD_010]
-    bassList  = [HOUSE_DEEP_BASS_001,
-                 HOUSE_DEEP_BASS_002,
-                 HOUSE_DEEP_BASS_003,
-                 HOUSE_DEEP_BASS_004]
-    sfxList   = [HOUSE_SFX_WHOOSH_001,
-                 HOUSE_SFX_WHOOSH_002,
-                 HOUSE_SFX_WHOOSH_003,
-                 HOUSE_SFX_WHOOSH_004,
-                 HOUSE_SFX_WHOOSH_005,
-                 HOUSE_SFX_WHOOSH_006,
-                 HOUSE_SFX_WHOOSH_007,
-                 HOUSE_SFX_WHOOSH_008,
-                 HOUSE_SFX_WHOOSH_009,
-                 HOUSE_SFX_WHOOSH_010,
-                 HOUSE_SFX_WHOOSH_011]
+    # House
+    houseChords = createSoundList('HOUSE_DEEP_AIRYCHORD_', 1, 2)
+    houseChords.extend(createSoundList('HOUSE_DEEP_CHORD_', 1, 2))
+    houseChords.extend(createSoundList('HOUSE_DEEP_CRYSTALCHORD_', 1, 4))
+    house   = [createSoundList('HOUSE_BREAKBEAT_', 1, 26),
+               createSoundList('HOUSE_BREAK_FILL_', 1, 4),
+               createSoundList('HOUSE_ROADS_PIANO_', 1, 7),
+               houseChords,
+               createSoundList('HOUSE_DEEP_MOOGLEAD_', 1, 10),
+               createSoundList('HOUSE_DEEP_BASS_', 1, 4),
+               createSoundList('HOUSE_SFX_WHOOSH_', 1, 11)]
 
-    drums = randint(0, len(drumList)-1)
-    fills = randint(0, len(fillList)-1)
-    piano = randint(0, len(pianoList)-1)
-    chord = randint(0, len(chordList)-1)
-    lead  = randint(0, len(leadList)-1)
-    lead2 = randint(0, len(leadList)-1)
-    bass  = randint(0, len(bassList)-1)
-    sfx   = randint(0, len(sfxList)-1)
-    return [drumList [drums],
-              fillList[fills],
-              pianoList[piano],
-              chordList[chord],
-              leadList[lead],
-              leadList[lead2],
-              bassList[bass]]
+    # Techno
+    techLeads = createSoundList('TECHNO_CLUB_ANALOGLEAD_', 1, 6)
+    techLeads.extend(createSoundList('TECHNO_POLYLEAD_', 1, 7))
+    techPads  = createSoundList('TECHNO_CLUBRICH_PAD_', 1, 4)
+    techPads.extend(createSoundList('TECHNO_SOFTPAD_', 1, 3))
+    techno  = [createSoundList('TECHNO_MAINLOOP_', 1, 22),
+               createSoundList('TECHNO_ACIDBASS_', 1, 16),
+               techLeads,
+               createSoundList('TECHNO_LOOP_PART_', 1, 22),
+               techPads,
+               createSoundList('TECHNO_SYNTHPLUCK_', 1, 4),
+               createSoundList('TECHNO_WHITENOISESFX_', 1, 11)]
 
-def getRandomTechnoBeats():
-    # Creates a random list of sounds
-    drumList = [TECHNO_MAINLOOP_001,
-                 TECHNO_MAINLOOP_002,
-                 TECHNO_MAINLOOP_003,
-                 TECHNO_MAINLOOP_004,
-                 TECHNO_MAINLOOP_005,
-                 TECHNO_MAINLOOP_006,
-                 TECHNO_MAINLOOP_007,
-                 TECHNO_MAINLOOP_008,
-                 TECHNO_MAINLOOP_009,
-                 TECHNO_MAINLOOP_010]
-    bassList = [TECHNO_ACIDBASS_001,
-                TECHNO_ACIDBASS_002,
-                TECHNO_ACIDBASS_003,
-                TECHNO_ACIDBASS_004,
-                TECHNO_ACIDBASS_005,
-                TECHNO_ACIDBASS_006,
-                TECHNO_ACIDBASS_007,
-                TECHNO_ACIDBASS_008,
-                TECHNO_ACIDBASS_009,
-                TECHNO_ACIDBASS_010]
-    leadList = [TECHNO_CLUB_ANALOGLEAD_001,
-                TECHNO_CLUB_ANALOGLEAD_002,
-                TECHNO_CLUB_ANALOGLEAD_003,
-                TECHNO_CLUB_ANALOGLEAD_004,
-                TECHNO_CLUB_ANALOGLEAD_005,
-                TECHNO_CLUB_ANALOGLEAD_006]
-    loopList = [TECHNO_LOOP_PART_001,
-                TECHNO_LOOP_PART_002,
-                TECHNO_LOOP_PART_003,
-                TECHNO_LOOP_PART_004,
-                TECHNO_LOOP_PART_005,
-                TECHNO_LOOP_PART_006,
-                TECHNO_LOOP_PART_007,
-                TECHNO_LOOP_PART_008,
-                TECHNO_LOOP_PART_009,
-                TECHNO_LOOP_PART_010]
-    clubList = [TECHNO_CLUBRICH_PAD_001,
-                TECHNO_CLUBRICH_PAD_002,
-                TECHNO_CLUBRICH_PAD_003,
-                TECHNO_CLUBRICH_PAD_004]
-    pluckList = [TECHNO_SYNTHPLUCK_001,
-                 TECHNO_SYNTHPLUCK_002,
-                 TECHNO_SYNTHPLUCK_003,
-                 TECHNO_SYNTHPLUCK_004]
-    rollList  = [TECHNO_KICKROLL_001,
-                 TECHNO_KICKROLL_002,
-                 TECHNO_SNAREROLL_001,
-                 TECHNO_SNAREROLL_002,
-                 TECHNO_SNAREROLL_003,
-                 TECHNO_SNAREROLL_004,
-                 TECHNO_SNAREROLL_005]
 
-    drums = randint(0, len(drumList)-1)
-    bass  = randint(0, len(bassList)-1)
-    lead  = randint(0, len(leadList)-1)
-    loop  = randint(0, len(loopList)-1)
-    club  = randint(0, len(clubList)-1)
-    pluck = randint(0, len(pluckList)-1)
-    roll  = randint(0, len(rollList)-1)
+    # Eight Bit
+    eightbit = [createSoundList('EIGHT_BIT_ANALOG_DRUM_LOOP_', 1, 20),
+                createSoundList('EIGHT_BIT_ATARI_BASSLINE_', 1, 5),
+                createSoundList('EIGHT_BIT_ATARI_LEAD_', 1, 13),
+                createSoundList('EIGHT_BIT_ATARI_SYNTH_', 1, 5),
+                createSoundList('EIGHT_BIT_VIDEO_GAME_LOOP_', 1, 25),
+                createSoundList('EIGHT_BIT_ATARI_PAD_', 1, 4),
+                createSoundList('EIGHT_BIT_ATARI_SFX_', 1, 13)]
 
-    return [drumList[drums],
-            bassList[bass],
-            leadList[lead],
-            loopList[loop],
-            clubList[club],
-            pluckList[pluck],
-            rollList[roll]]
+    soundLists.append([])
+    soundLists.append(electro)
+    soundLists.append(house)
+    soundLists.append(techno)
+    soundLists.append(eightbit)
 
 def getRandomSounds(soundset=0):
     # Creates a random list of sounds
     # parameters: random set to use,
     # or 0 to take from a random choice of the available sets
 
-    if soundset == RND_ELECTRO_BEATS:
-        return getRandomElectroBeats()
-    elif soundset == RND_HOUSE_BEATS:
-        return getRandomHouseBeats()
-    elif soundset == RND_TECHNO_BEATS:
-        return getRandomTechnoBeats()
+    if soundset > 0:
+        set1 = randint(0, len(soundLists[soundset][0])-1)
+        set2  = randint(0, len(soundLists[soundset][1])-1)
+        set3 = randint(0, len(soundLists[soundset][2])-1)
+        set4 = randint(0, len(soundLists[soundset][3])-1)
+        set5  = randint(0, len(soundLists[soundset][4])-1)
+        set6 = randint(0, len(soundLists[soundset][5])-1)
+        set7   = randint(0, len(soundLists[soundset][6])-1)
+
+        return [soundLists[soundset][0][set1],
+                soundLists[soundset][1][set2],
+                soundLists[soundset][2][set3],
+                soundLists[soundset][3][set4],
+                soundLists[soundset][4][set5],
+                soundLists[soundset][5][set6],
+                soundLists[soundset][6][set7]]
     else:
-        choice = randint(RND_ELECTRO_BEATS, RND_TECHNO_BEATS)
+        choice = randint(1, len(soundLists) - 1)
         return getRandomSounds(choice)
 
 def makePattern(sounds, start, depth, skip=False):
@@ -348,6 +219,7 @@ def createFunkyDelayEffect():
 
 # Start the project!
 init()
+setupSoundLists()
 setTempo(TEMPO_BPM)
 
 if USE_RANDOM_PATTERN:

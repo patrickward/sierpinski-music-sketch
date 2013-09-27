@@ -9,7 +9,7 @@ It was created for the Survey of Music Technology course on Coursera in the Fall
 
 - **TEMPO_BPM:** set this to the tempo in beats per measure (bpm)
 - **USE\_RANDOM\_PATTERN:** set to True for random patterns, or False for a predetermined pattern
-- **RANDOM\_SOUND\_CHOICE:** Set to one of the **RND\_\*** constants at the top of the script
+- **RANDOM\_SOUND\_CHOICE:** Set to one of the **RND_*** constants at the top of the script
 
 ### Usage
 
