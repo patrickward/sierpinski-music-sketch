@@ -10,13 +10,23 @@ RND_ELECTRO_BEATS = 1      # 128 BPM
 RND_HOUSE_BEATS = 2        # 120 BPM
 RND_TECHNO_BEATS = 3       # 125 BPM
 RND_EIGHTBIT_BEATS = 4     # 115 BPM
+RND_HIPHOP_BEATS = 5       # 98 BPM
+RND_DUBSTEP_BEATS = 6      # 140 BPM
 
 # -------------------------
 # Configuration Constants
 # -------------------------
-TEMPO_BPM = 120                           # Tempo to set in Beats per Minute (BPM)
-USE_RANDOM_PATTERN = False                # Change to True for a truly random pattern
-RANDOM_SOUND_CHOICE = RND_RANDOM_BEATS    # Change to one of the RND_* choices
+TEMPO_BPM = 120                        # Tempo to set in Beats per Minute (BPM)
+RANDOM_SOUND_CHOICE = RND_HOUSE_BEATS  # Change to one of the RND_* choices
+# Measure pattern determines the track patterns that
+# get generated (still using random files though)
+# Each element in the list contains [depth, skip],
+# where depth is the depth of the Sierpinski carpet
+# and skip, if True, will skip every other row
+# An empty MEASURE_PATTERN creates a random set
+MEASURE_PATTERN = [[1, True], [3, True], [5, True], [7, False], [7, False], [5, True], [3, True], [1, True]]
+# MEASURE_PATTERN = [[1, True], [3, True], [7, False], [7, True], [7, True], [7, False], [3, True], [1, True]]
+# MEASURE_PATTERN = []
 
 def in_carpet(x, y):
     # Used to indicate if a beat should be included
@@ -121,11 +131,33 @@ def setupSoundLists():
                 createSoundList('EIGHT_BIT_ATARI_PAD_', 1, 4),
                 createSoundList('EIGHT_BIT_ATARI_SFX_', 1, 13)]
 
+    # Hip Hop
+    hiphopLeads = createSoundList('HIPHOP_DUSTYPIANOLEAD_', 1, 3)
+    hiphopLeads.extend(createSoundList('HIPHOP_GUITARLEAD_', 1, 2))
+    hiphop   = [createSoundList('HIPHOP_DUSTYGROOVE_', 1, 12),
+                createSoundList('HIPHOP_SYNTHBASS_', 1, 5),
+                createSoundList('HIPHOP_SYNTHPLUCKLEAD_', 1, 7),
+                createSoundList('HIPHOP_HITS_', 1, 7),
+                createSoundList('HIPHOP_MUTED_GUITAR_', 1, 10),
+                createSoundList('HIPHOP_TRAPHOP_BEAT_', 1, 10),
+                hiphopLeads]
+
+    # Dubstep
+    dubstep  = [createSoundList('DUBSTEP_DRUMLOOP_MAIN_', 1, 13),
+                createSoundList('DUBSTEP_PERCDRUM_', 1, 6),
+                createSoundList('DUBSTEP_LEAD_', 1, 20),
+                createSoundList('DUBSTEP_BASS_WOBBLE_', 1, 46),
+                createSoundList('DUBSTEP_SUBBASS_', 1, 15),
+                createSoundList('DUBSTEP_PAD_', 1, 4),
+                createSoundList('DUBSTEP_SFX_', 1, 8)]
+
     soundLists.append([])
     soundLists.append(electro)
     soundLists.append(house)
     soundLists.append(techno)
     soundLists.append(eightbit)
+    soundLists.append(hiphop)
+    soundLists.append(dubstep)
 
 def getRandomSounds(soundset=0):
     # Creates a random list of sounds
@@ -217,37 +249,30 @@ def createFunkyDelayEffect():
 
     return effect
 
+def createTrackPatterns():
+
+    # if measure pattern is empty,
+    # create random depths
+    if not MEASURE_PATTERN:
+        for p in range(8):
+            MEASURE_PATTERN.append([getRandomDepth(), randint(0,1)])
+
+    pattern = 0
+    for measure in range(1, 30, 4):
+        makePattern(getRandomSounds(RANDOM_SOUND_CHOICE),
+                measure, MEASURE_PATTERN[pattern][0], MEASURE_PATTERN[pattern][1])
+        pattern = pattern + 1
+
+
 # Start the project!
 init()
 setupSoundLists()
 setTempo(TEMPO_BPM)
-
-if USE_RANDOM_PATTERN:
-    # set USE_RANDOM_PATTERN to True
-    # to create a random pattern on each track
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 1, getRandomDepth(), True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 5, getRandomDepth(), True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 9, getRandomDepth())
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 13, getRandomDepth())
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 17, getRandomDepth(), True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 21, getRandomDepth(), True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 25, getRandomDepth(), True)
-else:
-    # When USE_RANDOM_PATTERN is False,
-    # this creates a nice repetitive pattern
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 1, 1, True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 5, 3, True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 9, 5, True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 13, 7)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 17, 7)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 21, 5, True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 25, 3, True)
-    makePattern(getRandomSounds(RANDOM_SOUND_CHOICE), 29, 1, True)
+createTrackPatterns()
 
 # Obrain some random speaak n spell voicings
 fitMedia(selectRandomFile(RICHARDDEVINE__EIGHTBIT_115_BPM__EIGHTVIDEOSPEAKNSPELL), 8, 3, 7)
 fitMedia(selectRandomFile(RICHARDDEVINE__EIGHTBIT_115_BPM__EIGHTVIDEOSPEAKNSPELL), 8, 27, 31)
-
 
 # set volume on the 1st track to fade in and out
 setEffect(1, VOLUME, GAIN, -20, 1, 0, 2)

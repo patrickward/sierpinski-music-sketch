@@ -8,8 +8,8 @@ It was created for the Survey of Music Technology course on Coursera in the Fall
 ### Configuration
 
 - **TEMPO_BPM:** set this to the tempo in beats per measure (bpm)
-- **USE\_RANDOM\_PATTERN:** set to True for random patterns, or False for a predetermined pattern
 - **RANDOM\_SOUND\_CHOICE:** Set to one of the **RND_*** constants at the top of the script
+- **MEASURE\_PATTERN:** a pattern of 8 sub lists, each with depth in the first index and skip(tru/false) in the second index.
 
 ### Usage
 
