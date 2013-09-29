@@ -1,3 +1,21 @@
+"""
+Sierpinski Music Sketch is a simple random music experiment built for
+the Survey of Music Technology course on Coursera. The patterns are based
+off of the Sierpinski Carpet.
+
+This file requires the EarSketch library and the Reaper DAW to run.
+
+:author: Patrick Ward
+:copyright: (c) 2013 Patrick Ward
+:license: MIT (http://opensource.org/licenses/MIT)
+:url: http://github.com/patrickward/sierpinski-music-sketch
+
+You can play around with the various configuration constants
+TEMPO_BPM, RANDOM_SOUND_CHOICE, and MEASURE_PATTERN to generate new
+music each time the script is run.
+
+Have fun!
+"""
 from earsketch import *
 from random import *
 from math import *
@@ -5,7 +23,7 @@ from math import *
 # Don't change RND_* constants. They are needed
 # for the random sounds generator, but made available
 # here so tha that you can use them for setting the RANDOM_SOUND_CHOICE variable
-RND_RANDOM_BEATS = 0       # Chooses random sounds from any of the following 3 sets
+RND_RANDOM_BEATS = 0       # Chooses random sounds from any of the following sets
 RND_ELECTRO_BEATS = 1      # 128 BPM
 RND_HOUSE_BEATS = 2        # 120 BPM
 RND_TECHNO_BEATS = 3       # 125 BPM
@@ -16,8 +34,12 @@ RND_DUBSTEP_BEATS = 6      # 140 BPM
 # -------------------------
 # Configuration Constants
 # -------------------------
-TEMPO_BPM = 115                         # Tempo to set in Beats per Minute (BPM)
-RANDOM_SOUND_CHOICE = RND_HOUSE_BEATS   # Change to one of the RND_* choices
+TEMPO_BPM = 120                         # Tempo to set in Beats per Minute (BPM)
+# Random Sound choice can be one of the RND_* constants above,
+# or a list made up of the RND_* constants (except RND_RANDOM_BEATS)
+# (e.g. [RND_HIPHOP_BEATS,, RND_HOUSE_BEATS]
+# RANDOM_SOUND_CHOICE = RND_HOUSE_BEATS
+RANDOM_SOUND_CHOICE = [RND_HIPHOP_BEATS, RND_TECHNO_BEATS]
 # Measure pattern determines the track patterns that
 # get generated (still using random files though)
 # Each element in the list contains [depth, skip],
@@ -26,14 +48,15 @@ RANDOM_SOUND_CHOICE = RND_HOUSE_BEATS   # Change to one of the RND_* choices
 # An empty MEASURE_PATTERN creates a random set
 MEASURE_PATTERN = [[1, True], [3, True], [5, True], [7, False], [7, False], [5, True], [3, True], [1, True]]
 # MEASURE_PATTERN = [[1, True], [3, True], [7, False], [7, True], [7, True], [7, False], [3, True], [1, True]]
-# MEASURE_PATTERN = []
+# MEASURE_PATTERN = [] # choose random patterns
 
 SIERPINSKI_ORDER = 3      # The Sierpinski order variable for the carpet (3 provides a nice 2-bar pattern)
 
 def in_carpet(x, y):
-    # Used to indicate if a beat should be included
-    # when making the Sierpinski carpet
-    # parameters: current depth, current beat
+    """
+    Used to indicate if a beat should be included when making the Sierpinski carpet
+    parameters: current depth, current beat
+    """
     while True:
         if x == 0 or y == 0:
             return True
@@ -44,9 +67,10 @@ def in_carpet(x, y):
         y /= 3
 
 def makeSierpinskiCarpet(audioclips, n, depth, start, skip=False):
-    # creates a pattern based off of the Sierpinski carpet pattern
-    # parameters: list of audioclips, Sierpinski order of n, depth of carpet, starting measure, skip rows?
-    # depth = d
+    """
+    creates a pattern based off of the Sierpinski carpet pattern
+    parameters: list of audioclips, Sierpinski order of n, depth of carpet, starting measure, skip rows?
+    """
     d = depth
     for i in xrange(3 ** n):
         if d == 0:                  # max depth reached
@@ -78,8 +102,10 @@ def makeSierpinskiCarpet(audioclips, n, depth, start, skip=False):
         d = d - 1
 
 def createSoundList(prefix, start, end):
-    # creates a simple list of sound files by building
-    # up constants as string and then evaluating them
+    """
+    creates a simple list of sound files by creating the EarSketch
+    constants as a string and then evaluating them
+    """
     soundList = []
     for i in range(start, end+1):
         f = prefix + '%(number)03d' % {"number": i}
@@ -88,6 +114,7 @@ def createSoundList(prefix, start, end):
 
 soundLists = []
 def setupSoundLists():
+    """ Sets up the sound lists used throughout the script """
 
     # Electro
     electro = [createSoundList('ELECTRO_DRUM_MAIN_BEAT_', 1, 10),
@@ -162,9 +189,16 @@ def setupSoundLists():
     soundLists.append(dubstep)
 
 def getRandomSounds(soundset=0):
-    # Creates a random list of sounds
-    # parameters: random set to use,
-    # or 0 to take from a random choice of the available sets
+    """
+    Creates a random list of sounds
+    parameters: random set to use, or 0 to take from a random choice of the available sets
+    """
+
+    # checks to see if soundset is not an integer, if not
+    # it is assumed that soundset is a list
+    if not isinstance(soundset, int):
+        rndset   = randint(0, len(soundset)-1)
+        soundset = soundset[rndset]
 
     if soundset > 0:
         set1 = randint(0, len(soundLists[soundset][0])-1)
@@ -187,20 +221,20 @@ def getRandomSounds(soundset=0):
         return getRandomSounds(choice)
 
 def makePattern(sounds, start, depth, skip=False):
-    # parameters: sound list, starting measure, depth of carpet, skip rows?
+    """ parameters: sound list, starting measure, depth of carpet, skip rows? """
     end = start + 4
     for measure in range(start, end, 2):
         makeSierpinskiCarpet(sounds, SIERPINSKI_ORDER, depth, measure, skip)
 
 def getRandomDepth():
-    # obtains a random depth to use in the carpet pattern
+    """ obtains a random depth to use in the carpet pattern """
     return randint(1,7)
 
 def createFunkyDelayEffect():
-    # creates a simple delay effet with an
-    # added bandpass that can be changed via an
-    # envelope to create a tinny, loudspeaker effect
-    # on the resulting echos
+    """
+    creates a simple delay effet with an added bandpass that can be changed via an
+    envelope to create a tinny, loudspeaker effect on the resulting echos
+    """
 
     effect = initEffect('funkyDelay')
 
@@ -252,9 +286,9 @@ def createFunkyDelayEffect():
     return effect
 
 def createTrackPatterns():
+    """ Creates the track patterns for each measure """
 
-    # if measure pattern is empty,
-    # create random depths
+    # if measure pattern is empty, create random depths
     if not MEASURE_PATTERN:
         for p in range(8):
             MEASURE_PATTERN.append([getRandomDepth(), randint(0,1)])
