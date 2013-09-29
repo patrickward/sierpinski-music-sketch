@@ -16,8 +16,8 @@ RND_DUBSTEP_BEATS = 6      # 140 BPM
 # -------------------------
 # Configuration Constants
 # -------------------------
-TEMPO_BPM = 120                        # Tempo to set in Beats per Minute (BPM)
-RANDOM_SOUND_CHOICE = RND_HOUSE_BEATS  # Change to one of the RND_* choices
+TEMPO_BPM = 115                         # Tempo to set in Beats per Minute (BPM)
+RANDOM_SOUND_CHOICE = RND_HOUSE_BEATS   # Change to one of the RND_* choices
 # Measure pattern determines the track patterns that
 # get generated (still using random files though)
 # Each element in the list contains [depth, skip],
@@ -27,6 +27,8 @@ RANDOM_SOUND_CHOICE = RND_HOUSE_BEATS  # Change to one of the RND_* choices
 MEASURE_PATTERN = [[1, True], [3, True], [5, True], [7, False], [7, False], [5, True], [3, True], [1, True]]
 # MEASURE_PATTERN = [[1, True], [3, True], [7, False], [7, True], [7, True], [7, False], [3, True], [1, True]]
 # MEASURE_PATTERN = []
+
+SIERPINSKI_ORDER = 3      # The Sierpinski order variable for the carpet (3 provides a nice 2-bar pattern)
 
 def in_carpet(x, y):
     # Used to indicate if a beat should be included
@@ -188,7 +190,7 @@ def makePattern(sounds, start, depth, skip=False):
     # parameters: sound list, starting measure, depth of carpet, skip rows?
     end = start + 4
     for measure in range(start, end, 2):
-        makeSierpinskiCarpet(sounds, 3, depth, measure, skip)
+        makeSierpinskiCarpet(sounds, SIERPINSKI_ORDER, depth, measure, skip)
 
 def getRandomDepth():
     # obtains a random depth to use in the carpet pattern
@@ -287,7 +289,7 @@ setEffect(8, funkyDelay, 'Feedback Amount', 0.4)
 setEffect(8, funkyDelay, 'Filter Resonance', 0.5)
 setEffect(8, funkyDelay, 'Filter Frequency', 500, 3, 15000, 7)
 setEffect(8, funkyDelay, 'Filter Frequency', 500, 27, 18000, 31)
-setEffect(8, VOLUME, GAIN, 30)
+setEffect(8, VOLUME, GAIN, 6)
 
 # finish the project!
 finish()
